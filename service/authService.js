@@ -3,6 +3,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const dbUserService = require("../db/service/dbUserService");
 
+const generateToken = (id, username) => {
+    return jwt.sign({
+        id,
+        username
+    }, process.env.LOGIN_JWT_PRIVATE_KEY, { expiresIn: '24h' });
+}
+
 class AuthService {
     async registration(username, password, name, surname) {
         if (!username || !password) {
@@ -44,10 +51,12 @@ class AuthService {
             throw ApiError.badRequest(`Wrong password`);
         }
 
-        const token = jwt.sign({
-            id: user.id,
-            username: user.username
-        }, process.env.LOGIN_JWT_PRIVATE_KEY, { expiresIn: '24h' });
+        const token = generateToken(user.id, user.username);
+        return { token };
+    }
+
+    async check(id, username) {
+        const token = generateToken(id, username);
         return { token };
     }
 }

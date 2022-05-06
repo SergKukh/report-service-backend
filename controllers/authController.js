@@ -12,6 +12,12 @@ class AuthController {
         const result = await authService.login(username, password);
         res.json(result);
     }
+
+    async check(req, res, next) {
+        const { id, username } = req.user;
+        const result = await authService.check(id, username);
+        res.json(result);
+    }
 }
 
 module.exports = new AuthController();
