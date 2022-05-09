@@ -1,4 +1,4 @@
-const { Task } = require("../models/models");
+const { Task, User } = require("../models/models");
 
 class DBTaskService {
     async createTask(userId, date, title, hours, reported, projectId) {
@@ -41,7 +41,13 @@ class DBTaskService {
         const tasks = await Task.findAll({
             where: { ...where },
             attributes: ['id', 'date', 'title', 'hours', 'reported', 'userId', 'projectId'],
-            order: [['date', 'ASC']]
+            order: [['date', 'ASC']],
+            include: [
+                {
+                    model: User,
+                    attributes: ['username', 'name', 'surname']
+                }
+            ]
         });
         return tasks;
     }

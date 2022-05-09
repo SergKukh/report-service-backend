@@ -21,6 +21,13 @@ class ProjectController {
         res.json(result);
     }
 
+    async getProjectData(req, res, next) {
+        const userId = req.user.id;
+        const projectId = req.params.id;
+        const result = await projectService.getProjectData(userId, projectId);
+        res.json(result);
+    }
+
     async inviteUser(req, res, next) {
         const { projectId, username } = req.body;
         const userId = req.user.id;

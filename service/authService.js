@@ -34,7 +34,8 @@ class AuthService {
 
         const hashPassword = await bcrypt.hash(password, 5);
         const user = await dbUserService.createUser(username, hashPassword, name, surname);
-        return user;
+        const token = generateToken(user.id, user.username);
+        return { token };
     }
 
     async login(username, password) {

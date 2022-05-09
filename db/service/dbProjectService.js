@@ -1,5 +1,5 @@
 const ApiError = require("../../errors/ApiError");
-const { Project, Participant, Role } = require("../models/models");
+const { Project, Participant, Role, User } = require("../models/models");
 const dbUserService = require("./dbUserService");
 
 class DBProjectService {
@@ -20,7 +20,10 @@ class DBProjectService {
     }
 
     async findProjectById(projectId) {
-        const project = await Project.findOne({ where: { id: projectId } });
+        const project = await Project.findOne({
+            where: { id: projectId },
+            attributes: ['id', 'name']
+        });
         return project;
     }
 
@@ -48,8 +51,28 @@ class DBProjectService {
     }
 
     async findUser(userId, projectId) {
-        const participant = await Participant.findOne({ where: { userId, projectId } });
+        const participant = await Participant.findOne({
+            where: { userId, projectId },
+            attributes: ['userId', 'roleId', 'projectId']
+        });
         return participant;
+    }
+
+    async findProjectParticipats(projectId) {
+        const participants = await Participant.findAll({
+            where: { projectId },
+            attributes: ['userId', 'roleId'],
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['username', 'name', 'surname'],
+                    required: false
+                }
+
+            ]
+        });
+        return participants;
     }
 
     async deleteProjectById(projectId) {

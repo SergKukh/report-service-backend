@@ -1,4 +1,5 @@
 const dbProjectService = require("../db/service/dbProjectService");
+const dbTaskService = require("../db/service/dbTaskService");
 const dbUserService = require("../db/service/dbUserService");
 const ApiError = require("../errors/ApiError");
 
@@ -37,6 +38,22 @@ class ProjectService {
     async getProjectsByUserId(userId) {
         const projects = await dbProjectService.findProjectsByUserId(userId);
         return projects;
+    }
+
+    async getProjectData(userId, projectId) {
+        const data = {};
+        data.project = await dbProjectService.findProjectById(projectId);
+        data.roleId = await dbProjectService.getUserRole(userId, projectId);
+        data.roles = await dbUserService.getAllRoles();
+        data.participants = await dbProjectService.findProjectParticipats(projectId);
+        const adminRights = this._checkUserAdministratorRights(userId, projectId);
+        if (adminRights) {
+            data.tasks = await dbTaskService.getTasks({ projectId, reported: false });
+        } else {
+            data.tasks = await dbTaskService.getTasks({ projectId, userId, reported: false });
+        }
+
+        return data;
     }
 
     async inviteUserToProject(userId, projectId, username) {

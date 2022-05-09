@@ -35,6 +35,13 @@ class DBUserService {
         const role = await Role.findOne({ where: { id } });
         return role;
     }
+
+    async getAllRoles() {
+        const roles = await Role.findAll({
+            attributes: ['id', 'name', 'title']
+        });
+        return roles;
+    }
 }
 
 module.exports = new DBUserService();
